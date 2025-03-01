@@ -3,6 +3,7 @@ import { body, param } from "express-validator";
 
 import { BudgetController } from "../controllers/BudgetController";
 import { handleInputErrors } from "../middleware/validation";
+import { validateBudgetExists, validateBudgetId } from "../middleware/budget";
 
 
 // Importamos Router de Express para definir las rutas
@@ -33,9 +34,9 @@ router.post(
 // Ruta para obtener un presupuesto por ID
 router.get(
     '/:id',
+    validateBudgetId,   
+    validateBudgetExists,
     // Validar que el ID sea un número entero y positivo
-    param('id').isInt().withMessage('Id no válido')
-        .custom((value) => parseInt(value) > 0).withMessage('Id no puede ser negativo'),
 
     // Middleware para manejar errores de validación
     handleInputErrors,
@@ -47,10 +48,8 @@ router.get(
 // Ruta para actualizar un presupuesto por ID
 router.put(
     '/:id',
-    // Validar que el ID sea un número entero y positivo
-    param('id').isInt().withMessage('Id no válido')
-        .custom((value) => parseInt(value) > 0).withMessage('Id no puede ser negativo'),
-
+    validateBudgetId,
+    validateBudgetExists,
     // Validar que el campo "name" no esté vacío
     body('name').notEmpty().withMessage('Name is required'),
 
@@ -69,9 +68,8 @@ router.put(
 
 // Ruta para eliminar un presupuesto por ID
 router.delete('/:id',
-    param('id').isInt().withMessage('Id no válido')
-    .custom((value) => parseInt(value) > 0).withMessage('Id no puede ser negativo'),
-
+    validateBudgetId,
+    validateBudgetExists,
 // Middleware para manejar errores de validación
 handleInputErrors,
     BudgetController.deleteById);
