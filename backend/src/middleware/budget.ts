@@ -1,6 +1,6 @@
 
 import type { Request, Response, NextFunction } from "express";
-import { param, validationResult } from "express-validator";
+import { param, validationResult, body } from "express-validator";
 import Budget from "../models/Budget";
 
 declare global {
@@ -14,7 +14,7 @@ declare global {
 
 export const validateBudgetId =  async (req: Request, res: Response, next: NextFunction) => {
        // Validar que el ID sea un número entero y positivo
-       await param('id').isInt().withMessage('Id no válido')
+       await param('budgetId').isInt().withMessage('Id no válido')
        .custom((value) => parseInt(value) > 0)
        .withMessage('Id no puede ser negativo')
        .run(req);
@@ -33,8 +33,8 @@ export const validateBudgetId =  async (req: Request, res: Response, next: NextF
 
 export const validateBudgetExists = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const id = Number(req.params.id);
-        const budget = await Budget.findByPk(id);
+        const { budgetId } = req.params;
+        const budget = await Budget.findByPk(budgetId);
 
         if (!budget) {
             return next(new Error("Presupuesto no encontrado"));  // 🔴 Pasa el error al manejador global
@@ -47,3 +47,20 @@ export const validateBudgetExists = async (req: Request, res: Response, next: Ne
         return next(error);  // 🔴 Pasa el error al manejador global
     }
 };
+
+
+export const validateBudgetInput = async (req: Request, res: Response, next: NextFunction) => {
+
+
+        await body('name').notEmpty().withMessage('Name is required').run(req);
+    
+        // Validar que el campo "amount":
+        await body('amount')
+            .notEmpty().withMessage('Amount is required') // No puede estar vacío
+            .isNumeric().withMessage('Cantidad no válida') // Debe ser un número
+            .custom((value) => parseFloat(value) > 0).withMessage('Cantidad no puede ser negativa').run(req); // Debe ser mayor que 0
+    
+
+
+    next();
+}                    
