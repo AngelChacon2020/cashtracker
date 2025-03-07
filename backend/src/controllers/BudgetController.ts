@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import Budget from '../models/Budget';
+import Expense from "../models/Expense";
 
 export class BudgetController {
     // Método para obtener todos los presupuestos
@@ -28,7 +29,9 @@ export class BudgetController {
 
     // Método para obtener un presupuesto por ID
     static getById = async (req: Request, res: Response) => {
-        res.json(req.budget);
+        const budget = await Budget.findByPk(req.budget.id,
+            {include : [Expense]})  
+        res.json(budget)
     };
 
 

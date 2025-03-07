@@ -37,16 +37,18 @@ export const validateBudgetExists = async (req: Request, res: Response, next: Ne
         const budget = await Budget.findByPk(budgetId);
 
         if (!budget) {
-            return next(new Error("Presupuesto no encontrado"));  // 🔴 Pasa el error al manejador global
+           const error = new Error('Presupuesto no encontrado');
+           return res.status(404).json({ error: error.message });
         }
 
-        req.budget = budget;
-        return next();  // ✅ Llamar a next() cuando es exitoso
+        req.budget = budget
+
+        next();
     } catch (error) {
-        console.error("Error al obtener presupuesto:", error);
-        return next(error);  // 🔴 Pasa el error al manejador global
+        res.status(500).json({ error: 'Error al obtener presupuesto' });
     }
 };
+
 
 
 export const validateBudgetInput = async (req: Request, res: Response, next: NextFunction) => {

@@ -1,5 +1,5 @@
 import { IncrementDecrementOptionsWithBy } from 'sequelize';
-import { Table, Column, Model, DataType, HasMany, BelongsTo, ForeignKey }    from 'sequelize-typescript'; 
+import { Table, Column, Model, DataType, HasMany, BelongsTo, ForeignKey,AllowNull }    from 'sequelize-typescript'; 
 import Budget from './Budget';
 
 
@@ -8,11 +8,13 @@ import Budget from './Budget';
 })
 
 class Expense extends Model{
+    @AllowNull
     @Column({
         type: DataType.STRING(100)
     })
     declare name: string
 
+    @AllowNull
     @Column({
         type: DataType.DECIMAL
     })
