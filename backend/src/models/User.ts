@@ -37,7 +37,7 @@ import Budget from './Budget';
         type: DataType.BOOLEAN,
        
     })    
-    declare confirmed: string
+    declare confirmed: boolean
 
     @HasMany(() => Budget, {
         onUpdate: 'CASCADE',

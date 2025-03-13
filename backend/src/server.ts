@@ -4,6 +4,7 @@ import colors from 'colors'
 import { db } from './config/db'
 import budgetRoutes from './routes/budgetRouter'
 import authRoutes from './routes/authRouter'
+import { limiter } from './config/limiter'
 
 async function connectDB() {
     try {
@@ -22,6 +23,8 @@ const app = express()
 app.use(morgan('dev'))
 
 app.use(express.json())
+
+
 
 app .use('/api/budgets', budgetRoutes)
 app .use('/api/auth', authRoutes)
