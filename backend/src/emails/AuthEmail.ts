@@ -13,4 +13,7 @@ export class AuthEmail {
         console.log(user);
     }   
 
+    static sendPasswordReset = async (user: EmailType) => {
+        console.log(user);
+    }   
 }

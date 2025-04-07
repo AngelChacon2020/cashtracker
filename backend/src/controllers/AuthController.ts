@@ -87,4 +87,54 @@ export class AuthController {
 
         res.json(token);
     }
+
+
+    static resetPassword = async (req: Request, res: Response) => {
+        const { email } = req.body
+
+        const user = await User.findOne({ where: {email}})
+
+        if (!user) {
+            res.status(404).json({ error: 'usuario no registrado' });
+            return;        
+     }
+     user.token = generateToken();
+     await user.save();
+
+     //await AuthEmail.sendPasswordReset() resolve depues
+     res.json(user)
+    }
+
+
+    static validateToken = async (req: Request, res: Response) => {
+            const { token } = req.body
+
+            const tokenExists = await User.findOne({ where: {token}})
+
+            if (!tokenExists) {
+                res.status(404).json({ error: 'Token no valido' });
+                return;
+            }
+            res.json('Token valido...');
+    }
+
+
+    static resetpasswordwithtoken = async (req: Request, res: Response) => {
+        const { token } = req.params
+        const { password } = req.body
+
+        const user = await User.findOne({ where: {token}})
+        if (!user) {
+                res.status(404).json({ error: 'Token no valido' });
+                return;
+            }
+            //asignar el nuevo password
+            user.password = await hashPassword(password);
+            user.token = null;
+            await user.save();
+
+        res.json('Password actualizado correctamente');
+
+
+    }
 }
