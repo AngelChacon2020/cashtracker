@@ -3,6 +3,7 @@ import { AuthController } from '../controllers/AuthController'
 import { body, param } from 'express-validator'
 import { handleInputErrors } from '../middleware/validation';
 import { limiter } from '../config/limiter';
+import { authenticate } from '../middleware/auth';
 
 
 const router = Router()
@@ -68,5 +69,35 @@ router.post('/login',
         
         handleInputErrors,
         AuthController.resetpasswordwithtoken)
+
+
+
+
+    router.get('/user', 
+        authenticate,
+        AuthController.user)
        
 export  default router
+
+
+router.post('/update-password/:token', 
+    authenticate,
+    body('current_password')
+        .notEmpty().withMessage('El password actual es requerido'),
+        
+        handleInputErrors,
+    body('password')
+        .isLength({ min: 8 }).withMessage('La contraseña debe tener al menos 8 caracteres'),
+        
+        handleInputErrors,
+    AuthController.updateCurrentUser
+)
+
+router.post('/check-password', 
+    authenticate,
+    body('password')
+        .notEmpty().withMessage('El password actual es requerido'),
+        
+        handleInputErrors,
+    AuthController.checkPassword
+)

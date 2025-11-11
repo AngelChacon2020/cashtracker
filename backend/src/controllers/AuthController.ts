@@ -1,9 +1,8 @@
 import type { Request, Response } from "express";
 import User from "../models/User";
-import { checkPassword, hashPassword } from "../utils/auth";
+import { checkPassword, hashPassword } from '../utils/auth';
 import { generateToken } from '../utils/token';
 import { AuthEmail } from "../emails/AuthEmail";
-import { body } from "express-validator";
 import { generateJWT } from "../utils/jwt";
 
 export class AuthController {
@@ -137,4 +136,46 @@ export class AuthController {
 
 
     }
+
+     static user = async (req: Request, res: Response) => {
+  
+                res.json(req.user)
+
+     }
+
+static updateCurrentUser = async (req: Request, res: Response) => {
+    const { current_password, password } = req.body   
+    const {id} = req.user
+
+    const user = await User.findByPk(id)
+
+    const isPasswordValid = await checkPassword(current_password, user.password)
+    if (!isPasswordValid) {
+        res.status(401).json({ error: 'password incorrecto' });
+        return;
+    }
+    
+    user.password = await hashPassword(password);
+    await user.save();
+    res.json('Password actualizado correctamente');
+
+}               
+
+static checkPassword = async (req: Request, res: Response) => {
+    const { password} = req.body   
+    const {id} = req.user
+
+    const user = await User.findByPk(id)
+
+    const isPasswordValid = await checkPassword(password, user.password)
+    if (!isPasswordValid) {
+        res.status(401).json({ error: 'password incorrecto' });
+        return;
+    }
+    
+    
+    res.json('Password  correctamente');
+
+}   
+
 }
